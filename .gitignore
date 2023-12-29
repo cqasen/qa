@@ -1,0 +1,12 @@
+env
+run.sh
+data
+__pycache__
+.DS_Store
+venv
+.idea
+/cache_folder/embeddings/BAAI_bge-small-zh-v1.5
+/cache_folder/models/hfl_chinese-pert-large-mrc
+/cache_folder/models/wptoux_albert-chinese-large-qa
+/cache_folder/vector_store_path
+/cache_folder/models/ClueAI/ChatYuan-large-v2
