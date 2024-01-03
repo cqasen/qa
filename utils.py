@@ -3,14 +3,14 @@ from pathlib import Path
 import html2text
 import streamlit as st
 import torch
-from config import Config
 from langchain.document_loaders import TextLoader, UnstructuredImageLoader, PDFMinerLoader
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import Chroma
 from modelscope import AutoTokenizer, AutoModelForCausalLM, snapshot_download
-from transformers import AutoTokenizer
 from transformers import pipeline
+
+from config import Config
 
 
 @st.cache_data()
