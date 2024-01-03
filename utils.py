@@ -3,18 +3,14 @@ from pathlib import Path
 import html2text
 import streamlit as st
 import torch
-from langchain.chains import RetrievalQA
+from config import Config
 from langchain.document_loaders import TextLoader, UnstructuredImageLoader, PDFMinerLoader
 from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.llms import HuggingFacePipeline
-from langchain.prompts.prompt import PromptTemplate
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import Chroma
-from modelscope import snapshot_download
-from transformers import AutoModel, AutoTokenizer
+from modelscope import AutoTokenizer, AutoModelForCausalLM, snapshot_download
+from transformers import AutoTokenizer
 from transformers import pipeline
-
-from config import Config
 
 
 @st.cache_data()
@@ -207,32 +203,24 @@ def load_chroma_db(embeddings):
     return Chroma(persist_directory=vector_store_path, embedding_function=embeddings)
 
 
-@st.cache_data()
-def load_model():
-    model_name = "./cache_folder/models/ClueAI/ChatYuan-large-v2"
-    device = "cuda:1" if torch.cuda.is_available() else "cpu"
+def chat(query: str, content: str, history=None):
+    model_id = "qwen/Qwen-1_8B-Chat-Int4"
+    local_model_id = "./cache_folder/models/{0}".format(model_id)
+    tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path=local_model_id,
+                                              revision='master',
+                                              trust_remote_code=True)
+    model = AutoModelForCausalLM.from_pretrained(
+        pretrained_model_name_or_path=local_model_id,
+        revision='master',
+        device_map="cpu",
+        trust_remote_code=True
+    ).eval()
 
-    tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
-    # 加载模型
-    model = AutoModel.from_pretrained(model_name, trust_remote_code=True)
-    model.to(device)
-    # 加载模型对应的tokenizer
-    model.eval()
-    # 返回模型和tokenizer
-    return model, tokenizer
-
-
-@st.cache_data()
-def load_llm():
-    model, tokenizer = load_model()
-    prompt_template = """基于以下已知信息，简洁和专业的来回答用户的问题。
-                        如果无法从中得到答案，请说 "根据已知信息无法回答该问题" 或 "没有提供足够的相关信息"，不允许在答案中添加编造成分，答案请使用中文。
-                        已知内容:
-                        {context}
-                        问题:
-                        {question}"""
-
-    prompt_informed = PromptTemplate(template=prompt_template, input_variables=["context", "question"])
-    pipe = pipeline(task="text2text-generation", model=model, tokenizer=tokenizer)
-    local_llm = HuggingFacePipeline(pipeline=pipe)
-    return RetrievalQA.from_llm(llm=local_llm, prompt=prompt_informed)
+    prompt = """
+    基于```内的内容回答问题。
+```
+{content}
+```
+我的问题是：{query}。
+    """.format(query=query, content=content)
+    return model.chat(tokenizer, prompt, history=history)

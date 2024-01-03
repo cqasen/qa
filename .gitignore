@@ -10,3 +10,4 @@ venv
 /cache_folder/models/wptoux_albert-chinese-large-qa
 /cache_folder/vector_store_path
 /cache_folder/models/ClueAI/ChatYuan-large-v2
+/cache_folder/models/qwen/Qwen-1_8B-Chat-Int4
