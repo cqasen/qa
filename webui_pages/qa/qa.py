@@ -39,19 +39,19 @@ def qa_page(embeddings, db):
         # print(page_content)
         # 调用缓存的 QA 模型
         # 加载 QA 模型
-        # qa_pipeline = utils.load_qa_pipeline(pipeline_model_name)
-        # result = qa_pipeline(question=question_input, context=page_content, max_answer_len=100, max_seq_len=512)
+        qa_pipeline = utils.load_qa_pipeline(pipeline_model_name)
+        result = qa_pipeline(question=question_input, context=page_content, max_answer_len=100, max_seq_len=512)
 
-        response, history = utils.chat(query=question_input, content=page_content)
-        print(response)
-        print(history)
+        # response, history = utils.chat(query=question_input, content=page_content)
+        # print(response)
+        # print(history)
 
         info_tips.empty()
         info_tips.info("以下是给出的答案")
         # 显示结果
-        # answer = result['answer']
-        # if answer == "。":
-        #     st.warning("对不起，我不知道这个问题的答案。")
-        # else:
-        #     st.write(f"问题: {question_input}")
-        #     st.write(f"答案: {answer}")
+        answer = result['answer']
+        if answer == "。":
+            st.warning("对不起，我不知道这个问题的答案。")
+        else:
+            st.write(f"问题: {question_input}")
+            st.write(f"答案: {answer}")
