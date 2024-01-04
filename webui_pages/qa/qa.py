@@ -10,12 +10,17 @@ def qa_page(embeddings, db):
     # Streamlit 应用
     st.title("💬 知识问答")
     disabled = False
-    # with st.sidebar:
-    #     pipeline_model_name = st.selectbox("模型选择", options=Config.pipeline_model_names)
-    #
-    # if pipeline_model_name is None:
-    #     disabled = True
-    #     st.warning("请先选择问答模型")
+    with st.sidebar:
+        other = ['qwen/qwen-max']
+        options = []
+        options.extend(other)
+        options.extend(Config.pipeline_model_names)
+
+        pipeline_model_name = st.selectbox("模型选择", options=options)
+
+    if pipeline_model_name is None:
+        disabled = True
+        st.warning("请先选择问答模型")
 
     # 用户输入问题
     question_input = st.text_input(label="请输入您的问题:", placeholder="请输入您的问题")
@@ -41,13 +46,14 @@ def qa_page(embeddings, db):
         # print(page_content)
         # 调用缓存的 QA 模型
         # 加载 QA 模型
-        # qa_pipeline = utils.load_qa_pipeline(pipeline_model_name)
-        # result = qa_pipeline(question=question_input, context=page_content, max_answer_len=100, max_seq_len=512)
-
-        response = utils.qwen_chat(query=question_input, content=page_content)
-        result = {
-            "answer": response
-        }
+        if pipeline_model_name in Config.pipeline_model_names:
+            qa_pipeline = utils.load_qa_pipeline(pipeline_model_name)
+            result = qa_pipeline(question=question_input, context=page_content, max_answer_len=100, max_seq_len=512)
+        else:
+            response = utils.qwen_chat(query=question_input, content=page_content)
+            result = {
+                "answer": response
+            }
 
         info_tips.empty()
         info_tips.info("以下是给出的答案")
