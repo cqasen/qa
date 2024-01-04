@@ -10,7 +10,7 @@
 >
 > embeddings的模型采用的是 BAAI/bge-small-zh-v1.5
 > 
-> 新增阿里云大模型（https://dashscope.console.aliyun.com/），通义千问2.1（qwen-max）API 
+> 新增阿里云大模型（https://dashscope.console.aliyun.com/），通义千问2.1（qwen-max）API  ，需要再配置文件.env中配置DASHSCOPE_API_KEY参数，dashscope 的API_KEY
 
 ## 安装
 
