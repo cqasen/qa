@@ -1,5 +1,8 @@
+# -*- coding: utf-8 -*-
+from http import HTTPStatus
 from pathlib import Path
 
+import dashscope
 import html2text
 import streamlit as st
 import torch
@@ -203,8 +206,8 @@ def load_chroma_db(embeddings):
     return Chroma(persist_directory=vector_store_path, embedding_function=embeddings)
 
 
-def chat(query: str, content: str, history=None):
-    model_id = "qwen/Qwen-1_8B-Chat-Int4"
+def load_qwen_model_tokenizer():
+    model_id = "qwen/Qwen-1_8B-Chat"
     local_model_id = "./cache_folder/models/{0}".format(model_id)
     tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path=local_model_id,
                                               revision='master',
@@ -216,6 +219,10 @@ def chat(query: str, content: str, history=None):
         trust_remote_code=True
     ).eval()
 
+    return model, tokenizer
+
+
+def chat(query: str, content: str, history=None):
     prompt = """
     基于```内的内容回答问题。
 ```
@@ -223,4 +230,39 @@ def chat(query: str, content: str, history=None):
 ```
 我的问题是：{query}。
     """.format(query=query, content=content)
+
+    model, tokenizer = load_qwen_model_tokenizer()
     return model.chat(tokenizer, prompt, history=history)
+
+
+def qwen_chat(query: str, content: str):
+    prompt = """
+    基于```内的内容回答问题。
+```
+{content}
+```
+我的问题是：{query}。
+    """.format(query=query, content=content)
+
+    response = dashscope.Generation.call(
+        model='qwen-max',
+        prompt=prompt,
+        seed=1234,
+        top_p=0.8,
+        result_format='message',
+        enable_search=False,
+        max_tokens=1500,
+        temperature=1.0,
+        repetition_penalty=1.0,
+        api_key=Config.dashscope_api_key
+    )
+
+    if response.status_code == HTTPStatus.OK:
+        message = response.output.choices[0].message.content
+    else:
+        message = 'Request id: %s, Status code: %s, error code: %s, error message: %s' % (
+            response.request_id, response.status_code,
+            response.code, response.message
+        )
+        print(message)
+    return message
