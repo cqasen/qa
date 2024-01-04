@@ -32,7 +32,7 @@ def load_qa_pipeline(model_id):
     local_model_id = "./cache_folder/models/{0}".format(model_id.replace("/", "_"))
     # model_id = "./cache_folder/models/hfl_chinese-pert-large-mrc/"
     device = "cuda:1" if torch.cuda.is_available() else "cpu"
-    return pipeline("question-answering", model=local_model_id, tokenizer=model_id, device=device)
+    return pipeline("question-answering", model=local_model_id, tokenizer=local_model_id, device=device)
 
 
 @st.cache_data()

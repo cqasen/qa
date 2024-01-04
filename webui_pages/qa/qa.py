@@ -11,9 +11,10 @@ def qa_page(embeddings, db):
     st.title("💬 知识问答")
     disabled = False
     with st.sidebar:
-        other = ['qwen/qwen-max']
         options = []
-        options.extend(other)
+        if Config.dashscope_api_key is not None:
+            other = ['qwen/qwen-max']
+            options.extend(other)
         options.extend(Config.pipeline_model_names)
 
         pipeline_model_name = st.selectbox("模型选择", options=options)
