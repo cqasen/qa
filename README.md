@@ -9,6 +9,8 @@
 > 两个问答模型任选其一
 >
 > embeddings的模型采用的是 BAAI/bge-small-zh-v1.5
+> 
+> 新增阿里云大模型（https://dashscope.console.aliyun.com/），通义千问2.1（qwen-max）API 
 
 ## 安装
 
@@ -64,3 +66,11 @@ streamlit run app.py
 ##### 模型 wptoux/albert-chinese-large-qa 示例
 
 ![image](./images/demo5.png)
+
+##### 调用的阿里云通义千问2.1（qwen-max）
+
+![image](./images/demo7.png)
+
+#### 调用的阿里云通义千问2.1（qwen-max）
+
+![image](./images/demo6.png)
