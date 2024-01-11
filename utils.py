@@ -10,8 +10,6 @@ from langchain.document_loaders import TextLoader, UnstructuredImageLoader, PDFM
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import Chroma
-from modelscope import AutoTokenizer, AutoModelForCausalLM, snapshot_download
-from transformers import pipeline
 
 from config import Config
 
@@ -23,7 +21,8 @@ def init_model():
     # "hfl/chinese-pert-large-mrc",
     # "wptoux/albert-chinese-large-qa",
     # 下载模型
-    model_download(Config.pipeline_model_names)
+    model_download(Config.pipeline_model_names, "models")
+    model_download([Config.embedding_model_name], "embeddings")
 
 
 @st.cache_data()
@@ -163,33 +162,29 @@ def load_similarity_search(db, question_input):
     return page_content
 
 
-def model_download(model_name_list):
-    # 指定模型名称（"hfl/chinese-pert-large-mrc"）和任务（"question-answering"）
-    if not model_name_list:
-        model_name_list = [
-            "hfl/chinese-pert-large-mrc",
-            "wptoux/albert-chinese-large-qa",
-        ]
+def model_download(model_name_list: list, folder: str):
+    """
+    向量模型下载
+    """
+    from transformers import AutoModel, AutoTokenizer
     for model_name in model_name_list:
-        task = "question-answering"
-        local_path = "./cache_folder/models/{0}".format(model_name.replace("/", "_"))
+        local_path = "./cache_folder/{0}/{1}".format(folder, model_name.replace("/", "_"))
         if Path(local_path).exists():
             print(f"模型已存在本地路径: {local_path}")
             continue
 
-        # 创建一个question-answering的pipeline
-        qa_pipeline = pipeline(task, model=model_name, tokenizer=model_name)
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        model = AutoModel.from_pretrained(model_name)
 
-        # 保存模型到本地路径
-
-        qa_pipeline.model.save_pretrained(local_path)
-        qa_pipeline.tokenizer.save_pretrained(local_path)
-
+        # 将模型和分词器保存到指定目录
+        model.save_pretrained(local_path)
+        tokenizer.save_pretrained(local_path)
         print(f"模型已下载到本地路径: {local_path}")
-    print("模型全部下载完成")
+    print("模型{0}全部下载完成".format(','.join(model_name_list)))
 
 
 def modelscope_download(model_id):
+    from modelscope import snapshot_download
     """
     从modelscope上面下载模型
     """
@@ -207,6 +202,8 @@ def load_chroma_db(embeddings):
 
 
 def load_qwen_model_tokenizer():
+    from modelscope import AutoTokenizer, AutoModelForCausalLM
+
     model_id = "qwen/Qwen-1_8B-Chat"
     local_model_id = "./cache_folder/models/{0}".format(model_id)
     tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path=local_model_id,
