@@ -38,9 +38,10 @@ def load_qa_pipeline(model_id):
 def load_embeddings():
     encode_kwargs = {'normalize_embeddings': False}
     model_kwargs = {'device': "cuda" if torch.cuda.is_available() else "cpu"}
+    model_id = Config.embedding_model_name
+    local_model_id = "./cache_folder/embeddings/{0}".format(model_id.replace("/", "_"))
     embeddings = HuggingFaceEmbeddings(
-        model_name=Config.embedding_model_name,
-        cache_folder="./cache_folder/embeddings",
+        model_name=local_model_id,
         model_kwargs=model_kwargs,
         encode_kwargs=encode_kwargs,
     )
