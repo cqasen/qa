@@ -175,7 +175,7 @@ def qa_page():
     @tool("get_faq")
     def get_faq(query: str):
         """
-        本地知识库问答,小米汽车(su7)答网友100问,劳动法学习实操手册
+        优先通过本地知识库问答,小米汽车(su7)答网友100问,劳动法学习实操手册。如果本地知识库回答不了，再通过get_baike进去回答
         """
         embeddings = utils.load_embeddings()
         db = utils.load_chroma_db(embeddings)
