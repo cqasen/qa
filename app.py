@@ -14,9 +14,7 @@ if __name__ == '__main__':
     )
     # 初始化模型
     utils.init_model()
-    # 加载词向量模型
-    embeddings = utils.load_embeddings()
-    db = utils.load_chroma_db(embeddings)
+
     pages = {
         "问答": {
             "icon": "chat",
@@ -39,4 +37,4 @@ if __name__ == '__main__':
             default_index=default_index,
         )
     if selected_page in pages:
-        pages[selected_page]["func"](embeddings, db)
+        pages[selected_page]["func"]()

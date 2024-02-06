@@ -17,3 +17,4 @@ class Config:
     ]  # 流水线模型名称列表
     vector_store_path = 'vector_store_path'  # 向量存储路径
     dashscope_api_key = os.getenv(key='DASHSCOPE_API_KEY', default=None)  # Dashscope API Key
+    amap_token = os.getenv(key='AMAP_TOKEN', default=None)  # Amap API Key

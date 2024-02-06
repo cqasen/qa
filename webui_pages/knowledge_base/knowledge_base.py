@@ -6,9 +6,12 @@ import streamlit as st
 import utils
 
 
-def knowledge_base_page(embeddings, db):
+def knowledge_base_page():
     # 通过侧边栏上传 txt 文件
     st.subheader("📝知识库配置")
+
+    embeddings = utils.load_embeddings()
+    db = utils.load_chroma_db(embeddings)
 
     with st.sidebar:
         with st.expander("清空知识库配置", False):
