@@ -26,7 +26,8 @@ if __name__ == '__main__':
         }
     }
     with st.sidebar:
-        st.image("./images/logo.png", width=278)
+        st.image("./images/logo.png")
+        st.subheader('', divider='rainbow')
         options = list(pages)
         icons = [x["icon"] for x in pages.values()]
         default_index = 0
