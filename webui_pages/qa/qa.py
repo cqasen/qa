@@ -135,7 +135,7 @@ def qa_page():
         """
         now = datetime.datetime.now()
         formatted_time = now.strftime("%Y-%m-%d %H:%M:%S")
-        return formatted_time
+        return f"现在的时间是{formatted_time}"
 
     @tool("get_amap_weather")
     def get_amap_weather(intput: str):
