@@ -31,7 +31,7 @@ if __name__ == '__main__':
         icons = [x["icon"] for x in pages.values()]
         default_index = 0
         selected_page = option_menu(
-            "",
+            "功能导航",
             options=options,
             icons=icons,
             default_index=default_index,
